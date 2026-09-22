@@ -13,6 +13,22 @@
   mundo/mods foi realizada para validar a aba.
 - Documentação do formato, limites, API e segurança em `SPARK.md` e `SECURITY.md`.
 
+### Implantação
+
+- Código publicado em `main`, commit inicial `a51385e`, em histórico novo.
+- Arquivo de implantação gerado diretamente do commit (`git archive`).
+- Cópia anterior do código preservada no servidor, arquivo tar verificado e
+  checksum SHA-256 calculado antes da instalação.
+- Serviço do painel ativo após atualização; 33 testes repetidos com sucesso.
+- Acesso à rota spark por origem sem identidade autorizada retorna 403.
+- Uptime e PID do Minecraft preservados; somente o painel web foi reiniciado.
+- A leitura do relatório real foi validada no host do jogo. A inspeção visual
+  usou dados sintéticos; a inspeção do conteúdo real no navegador do operador
+  depende de autorização para transferir esses metadados pela API.
+- Revisão de 29 arquivos antes do primeiro push: sem arquivos operacionais,
+  credenciais detectadas ou endereços reais. Exemplos e testes usam valores
+  fictícios; autor Git usa endereço público `noreply`.
+
 ## Testes realizados
 
 - Resultado: 18 testes aprovados no Windows e 19 no Ubuntu (incluindo a restauração de nomes com dois-pontos, específicos do Linux).
