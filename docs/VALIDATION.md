@@ -22,9 +22,10 @@
 - Serviço do painel ativo após atualização; 33 testes repetidos com sucesso.
 - Acesso à rota spark por origem sem identidade autorizada retorna 403.
 - Uptime e PID do Minecraft preservados; somente o painel web foi reiniciado.
-- A leitura do relatório real foi validada no host do jogo. A inspeção visual
-  usou dados sintéticos; a inspeção do conteúdo real no navegador do operador
-  depende de autorização para transferir esses metadados pela API.
+- A leitura do relatório real foi validada no host do jogo. Após autorização
+  explícita do proprietário, o navegador também confirmou o carregamento do
+  relatório real, expansão dos detalhes e ausência de overflow em 390 px.
+  Conteúdo real e snapshots do navegador não foram versionados.
 - Revisão de 29 arquivos antes do primeiro push: sem arquivos operacionais,
   credenciais detectadas ou endereços reais. Exemplos e testes usam valores
   fictícios; autor Git usa endereço público `noreply`.
