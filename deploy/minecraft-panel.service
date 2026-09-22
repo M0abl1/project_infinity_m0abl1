@@ -1,0 +1,16 @@
+[Unit]
+Description=Private Minecraft control panel
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/mine/minecraft-panel
+EnvironmentFile=/home/mine/minecraft-panel/.env
+ExecStart=/home/mine/minecraft-panel/.venv/bin/python /home/mine/minecraft-panel/run.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

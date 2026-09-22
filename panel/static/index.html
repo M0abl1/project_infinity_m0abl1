@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark"><meta name="robots" content="noindex,nofollow">
+  <title>Project Infinity | Controle do Minecraft</title>
+  <link rel="stylesheet" href="/assets/style.css"><script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true">PI</span><span>Project Infinity<small>Controle do Minecraft</small></span></a>
+    <nav aria-label="Seções do painel">
+      <button class="nav active" data-view="overview" aria-current="page">Visão geral</button>
+      <button class="nav" data-view="backups">Backups do mundo</button>
+      <button class="nav" data-view="logs">Logs ao vivo</button>
+      <button class="nav" data-view="spark">Desempenho · spark</button>
+      <button class="nav" data-view="audit">Atividade</button>
+    </nav>
+    <div class="private"><strong>Acesso privado</strong><small>Identidade verificada pelo Tailscale</small><small id="identity">Validando acesso…</small></div>
+  </aside>
+  <main>
+    <header><div><p class="eyebrow">Seu servidor, sob controle</p><h1 id="title">Visão geral</h1></div><span id="connection" class="tag">Conectando…</span></header>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <div id="job" class="notice" role="status" hidden></div>
+    <section id="overview" class="view">
+      <article class="server panel">
+        <div><span id="status" class="tag">Aguardando leitura</span><h2>Project Infinity</h2><p id="version">Minecraft Java com mods</p><p id="status-help">Consultando o processo e a resposta do jogo.</p></div>
+        <div class="actions"><button data-action="start" class="primary">Iniciar</button><button data-action="restart">Reiniciar</button><button data-action="stop" class="danger">Parar</button></div>
+      </article>
+      <div class="metrics">
+        <article class="panel"><h3>Jogadores online</h3><strong id="players">—</strong><small id="max-players">Aguardando resposta do jogo</small></article>
+        <article class="panel"><h3>Memória do Minecraft</h3><strong id="ram">—</strong><small>RAM residente do processo Java</small></article>
+        <article class="panel"><h3>CPU do Minecraft</h3><strong id="cpu">—</strong><small>100% equivale a um núcleo</small></article>
+        <article class="panel"><h3>Tempo em execução</h3><strong id="uptime">—</strong><small id="restarts">Desde o início do processo Java</small></article>
+      </div>
+      <div class="overview-grid">
+        <article class="panel"><div class="section-head"><h2>Últimas mensagens</h2><button data-open="logs">Ver logs</button></div><pre id="recent-log" class="log compact">Aguardando leitura…</pre></article>
+        <article class="panel"><h2>Proteção do mundo</h2><p>Backups automáticos gerados pelo FTB Backups 2.</p><strong id="last-backup" class="backup-date">Consultando…</strong><p id="backup-count"></p><button data-open="backups">Gerenciar backups</button><p class="muted">Restaurar substitui somente o mundo. Uma cópia do estado anterior é preservada.</p></article>
+      </div>
+    </section>
+    <section id="backups" class="view" hidden>
+      <div class="section-head"><p>Arquivos do modpack, sem alterar o agendamento existente.</p><button id="refresh-backups">Atualizar lista</button></div>
+      <p class="hint">CPU e RAM são registradas ao detectar um novo ZIP (medição aproximada). Backups anteriores ao painel não possuem métricas.</p>
+      <div id="backup-list" class="backup-list"><p>Carregando backups…</p></div>
+    </section>
+    <section id="logs" class="view" hidden>
+      <div class="toolbar panel">
+        <label>Buscar mensagem<input id="search" type="search" placeholder="Ex.: erro, jogador, backup"></label>
+        <label>Nível<select id="level"><option value="">Todos os níveis</option><option>ERROR</option><option>WARN</option><option>INFO</option></select></label>
+        <button id="pause">Pausar atualização</button><a class="button" href="/api/logs/download" download>Baixar trecho</a>
+      </div>
+      <p class="muted">Trecho recente de até 128 KB. O filtro atua sobre as linhas carregadas.</p>
+      <pre id="full-log" class="log panel" tabindex="0" aria-label="Logs recentes do Minecraft">Aguardando leitura…</pre>
+    </section>
+    <section id="spark" class="view" hidden>
+      <article class="panel">
+        <div class="section-head"><div><h2>Onde o servidor gasta tempo</h2><p>Relatórios locais de processamento por mod e componente.</p></div><button class="primary" data-action="spark">Analisar por 60 segundos</button></div>
+        <p class="hint">Os percentuais representam o tempo amostrado nas threads do relatório, não a CPU total do computador. Por padrão, a coleta analisa a thread principal do servidor. Zero significa ausência de tempo atribuído nesta amostra, não ausência de custo do mod.</p>
+        <div class="toolbar spark-toolbar"><label>Relatório<select id="spark-report"><option value="">Carregando…</option></select></label><button id="spark-refresh">Atualizar relatórios</button></div>
+        <p id="spark-state" role="status">Consultando relatórios…</p>
+      </article>
+      <div id="spark-result" hidden>
+        <div class="spark-summary panel"><h2 id="spark-period"></h2><p id="spark-scope"></p><p id="spark-attribution" class="hint"></p></div>
+        <div class="toolbar panel"><label>Buscar mod ou componente<input id="spark-search" type="search" placeholder="Nome ou identificador do mod"></label><label>Ordenar por<select id="spark-order"><option value="direct">Tempo direto (sem chamadas filhas)</option><option value="inclusive">Incluindo chamadas a outros componentes</option></select></label></div>
+        <p class="hint">Clique em um componente para ver seus métodos. O tempo incluindo chamadas pode se sobrepor entre mods e não deve ser somado.</p>
+        <div id="spark-ranking" class="spark-ranking"></div>
+      </div>
+    </section>
+    <section id="audit" class="view" hidden><p>Histórico dos comandos e downloads solicitados neste painel.</p><div id="audit-list" class="panel">Carregando…</div></section>
+    <footer><span id="updated">Nenhuma leitura recebida</span><span>Controles exclusivos do Minecraft</span></footer>
+  </main>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <form id="confirm-form"><h2 id="confirm-title">Confirmar operação</h2><p id="confirm-description"></p><label id="restore-label" hidden>Digite RESTAURAR para continuar<input id="restore-confirm" autocomplete="off"></label><div class="actions"><button type="button" id="cancel">Cancelar</button><button id="confirm-submit" type="submit" class="danger">Confirmar</button></div></form>
+  </dialog>
+  <dialog id="details-dialog" aria-labelledby="details-title"><h2 id="details-title">Conteúdo do backup</h2><p id="details-summary"></p><pre id="details-files" class="log"></pre><button id="close-details">Fechar</button></dialog>
+</body>
+</html>
