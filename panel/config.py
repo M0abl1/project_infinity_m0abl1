@@ -12,6 +12,7 @@ class Settings:
     port: int = 8787
     process: str = 'project-infinity'
     demo: bool = False
+    backup_keep: int = 0
 
     @classmethod
     def load(cls):
@@ -23,4 +24,5 @@ class Settings:
             os.getenv('PANEL_BIND', '127.0.0.1'),
             int(os.getenv('PANEL_PORT', '8787')),
             os.getenv('MINE_PM2_NAME', 'project-infinity'), demo,
+            int(os.getenv('PANEL_BACKUP_KEEP', '0')),
         )

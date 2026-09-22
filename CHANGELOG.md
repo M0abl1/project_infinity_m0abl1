@@ -1,5 +1,15 @@
 # Alterações
 
+## 2026-09-22 - Retenção
+
+- Retenção automática opt-in dos dez backups concluídos mais recentes, incluindo
+  snapshots, com verificação prévia de integridade e auditoria de exclusões.
+- Bloqueio compartilhado com inspeções, downloads, comandos e restaurações.
+- Política nativa do FTB Backups 2 ajustável para `MAX_BACKUPS` com limite 10.
+- Status e última verificação exibidos na aba Backups.
+- Comportamento fail-closed para catálogo inválido, cópia incompleta, ZIP alterado
+  ou nome sem data segura; nesses casos a exclusão é adiada.
+
 ## 2026-09-22
 
 - Publicação independente do painel, sem histórico de outros projetos.

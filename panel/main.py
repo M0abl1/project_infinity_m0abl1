@@ -19,6 +19,19 @@ from .monitor import Monitor
 from .security import tailscale_identity
 from .store import Store
 from .spark import SparkReports
+from .retention import Retention
+
+
+class LockedFileResponse(FileResponse):
+    def __init__(self, *args, operation_lock, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.operation_lock = operation_lock
+
+    async def __call__(self, scope, receive, send):
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            self.operation_lock.release()
 
 
 class Action(BaseModel):
@@ -35,6 +48,7 @@ def create_app(settings=None):
     spark = SparkReports(settings.root)
     monitor = Monitor(minecraft, backups, store)
     operation_lock = threading.Lock()
+    retention = Retention(backups, operation_lock, settings.backup_keep if not settings.demo else 0)
     job = {'state': 'idle', 'message': 'Nenhuma operação em andamento'}
     csrf = secrets.token_urlsafe(32)
     last_action = [0.0]
@@ -43,9 +57,13 @@ def create_app(settings=None):
     async def lifespan(app):
         if not settings.demo:
             monitor.thread.start()
+            if retention.keep:
+                retention.thread.start()
         yield
         if not settings.demo:
             monitor.close()
+            if retention.keep:
+                retention.close()
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     app.state.settings, app.state.monitor = settings, monitor
@@ -76,7 +94,8 @@ def create_app(settings=None):
     @app.get('/api/status')
     def status(request: Request):
         return {**monitor.status, 'actor': request.state.actor, 'csrf': csrf,
-                'demo': settings.demo, 'job': dict(job), 'name': settings.process}
+                'demo': settings.demo, 'job': dict(job), 'name': settings.process,
+                'retention': dict(retention.status)}
 
     @app.get('/api/logs')
     def logs():
@@ -92,19 +111,29 @@ def create_app(settings=None):
 
     @app.get('/api/backups/{name}/content')
     def content(name: str):
+        if not operation_lock.acquire(blocking=False):
+            raise HTTPException(409, 'Há uma operação de manutenção em andamento. Tente novamente.')
         try:
             return backups.inspect(name)
         except (ValueError, OSError, zipfile.BadZipFile) as exc:
             raise HTTPException(400, str(exc)) from exc
+        finally:
+            operation_lock.release()
 
     @app.get('/api/backups/{name}/download')
     def download(name: str, request: Request):
+        if not operation_lock.acquire(blocking=False):
+            raise HTTPException(409, 'Há uma operação de manutenção em andamento. Tente novamente.')
         try:
             path, _ = backups.validated(name)
             store.audit(request.state.actor, 'download', name, 'solicitado')
-            return FileResponse(path, filename=path.name, media_type='application/zip')
+            return LockedFileResponse(path, filename=path.name, media_type='application/zip', operation_lock=operation_lock)
         except (ValueError, OSError) as exc:
+            operation_lock.release()
             raise HTTPException(400, str(exc)) from exc
+        except BaseException:
+            operation_lock.release()
+            raise
 
     @app.get('/api/audit')
     def audit():

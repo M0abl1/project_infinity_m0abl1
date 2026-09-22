@@ -18,6 +18,8 @@ O acesso padrão é HTTP dentro da conexão criptografada do Tailscale. Não há
 - Backups ZIP existentes de `backups/`: data, tamanho, catálogo FTB, conteúdo (primeiras 150 entradas), download, CRC e SHA-1 quando disponível no catálogo do modpack. SHA-1 aqui serve para comparação com o catálogo existente, não como assinatura de autenticidade.
 - Monitoramento do surgimento de novos ZIPs: guarda CPU/RAM do Java e CPU/RAM global em SQLite. Medição aproximada no primeiro avistamento, normalmente em até um ciclo de 2 segundos; consultas lentas ao PM2/protocolo podem aumentar o atraso. Não captura retroativamente backups existentes ou criados enquanto o painel estava desligado.
 - Histórico das últimas 100 ações, com retenção de até 10.000 registros.
+- Retenção opcional de dez backups concluídos, com validação, auditoria e bloqueio
+  durante downloads/restaurações. [Política e configuração](docs/RETENTION.md).
 - Aba Desempenho: coleta spark local de 60 segundos, ranking por componente,
   busca e métodos principais. [Formato, API e limitações](docs/SPARK.md).
 
@@ -32,7 +34,7 @@ O acesso padrão é HTTP dentro da conexão criptografada do Tailscale. Não há
 
 Mods, configuração do servidor e ZIPs originais não são substituídos. As configurações contidas dentro do próprio mundo (como `world/serverconfig`) acompanham a restauração. O agendamento/retentor do modpack continua responsável pelos backups. Cópias `.panel-recovery` não são removidas automaticamente: consomem espaço e permitem recuperação manual. Falha elétrica entre renomeações pode exigir recolocar a cópia preservada com o jogo parado. Não reinicie o serviço do painel durante uma restauração.
 
-ZIPs fora do catálogo só ficam disponíveis após 120 segundos sem alteração; isso é uma heurística. A integridade é conferida novamente antes de restaurar. O painel não oferece exclusão dos backups nesta versão.
+ZIPs fora do catálogo só ficam disponíveis após 120 segundos sem alteração; isso é uma heurística. A integridade é conferida novamente antes de restaurar. Não há exclusão manual individual; a retenção automática opt-in remove permanentemente os excedentes quando configurada. Consulte `docs/RETENTION.md`.
 
 ## Executar no Windows para visualização
 

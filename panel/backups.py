@@ -42,9 +42,13 @@ class Backups:
         for path in self.directory.glob('*.zip'):
             if path.is_symlink() or not path.is_file():
                 continue
-            s = path.stat()
+            try:
+                s = path.stat()
+                complete = self.complete(path, manifest)
+            except FileNotFoundError:
+                continue  # A native or panel retention pass removed it during listing.
             result.append({'name': path.name, 'size': s.st_size, 'modified': s.st_mtime,
-                           'complete': self.complete(path, manifest),
+                           'complete': complete,
                            'metrics': observations.get(path.name),
                            'source': 'FTB Backups 2', 'catalogued': path.name in manifest})
         return sorted(result, key=lambda row: row['modified'], reverse=True)

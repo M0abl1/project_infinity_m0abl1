@@ -1,7 +1,7 @@
 import { initSpark, refreshSpark } from './spark.js';
 const $ = (id) => document.getElementById(id);
 const labels = {overview:'Visão geral', backups:'Backups do mundo', logs:'Logs ao vivo', audit:'Atividade', spark:'Desempenho · spark'};
-const verbs = {start:'Iniciar', stop:'Parar', restart:'Reiniciar', verify:'Verificar integridade', restore:'Restaurar mundo', download:'Download', spark:'Analisar processamento'};
+const verbs = {start:'Iniciar', stop:'Parar', restart:'Reiniciar', verify:'Verificar integridade', restore:'Restaurar mundo', download:'Download', spark:'Analisar processamento', retention_delete:'Limpeza automática'};
 let currentView = 'overview', status = null, rawLogs = '', paused = false, pending = null, tick = 0;
 const date = (n) => n ? new Date(n*1000).toLocaleString('pt-BR') : 'Não disponível';
 const bytes = (n) => n == null ? 'Não disponível' : n >= 1024**3 ? `${(n/1024**3).toFixed(2)} GB` : `${(n/1024**2).toFixed(1)} MB`;
@@ -35,6 +35,7 @@ function renderStatus(data) {
   text('ram',data.sampled_at ? bytes(data.ram_bytes) : '—'); text('cpu',data.sampled_at ? `${data.cpu_percent}%` : '—'); text('uptime',data.sampled_at ? duration(data.uptime_seconds) : '—');
   text('restarts',data.manager ? `${data.manager.restarts} reinicializações registradas no PM2` : 'Desde o início do processo Java');
   text('updated',`Última leitura: ${date(data.sampled_at)}`);
+  text('retention-status',data.retention?.enabled ? `${data.retention.message} Última verificação: ${date(data.retention.checked_at)}.` : 'Retenção automática do painel desativada. O modpack pode ter sua própria política.');
   const job=data.job;
   $('job').hidden=job.state==='idle'; text('job',job.message || '');
   document.querySelectorAll('[data-action]').forEach(button=>button.disabled=!!data.demo || job.state==='running' || !data.sampled_at || !!data.error);

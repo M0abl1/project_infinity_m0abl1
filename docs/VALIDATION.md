@@ -1,5 +1,19 @@
 # Validação
 
+## Retenção de backups, 22/09/2026
+
+- Política solicitada: manter dez ZIPs no total, incluindo snapshots.
+- Windows: 44 testes aprovados e 1 teste exclusivo de Linux ignorado.
+- Ubuntu isolado: a prévia apontou somente o ZIP mais antigo; 42 testes da
+  versão anterior ao reforço final passaram antes da ativação.
+- Antes da ativação, foi preservado e validado um arquivo da versão anterior do
+  código do painel. Os mundos e backups preservados não foram incluídos nele.
+- FTB Backups 2 configurado com `retention_mode=MAX_BACKUPS` e `max_backups=10`.
+- O painel confirmou retenção ativa, 10 backups disponíveis e Minecraft pronto
+  após a primeira limpeza. A exclusão foi registrada no SQLite de auditoria.
+- A cópia mais antiga foi removida permanentemente; não há lixeira ou
+  recuperação pelo painel. O nome operacional não foi versionado.
+
 ## Aba spark, 22/09/2026
 
 - Windows: 32 testes aprovados e 1 teste exclusivo de Linux ignorado.
